@@ -1,0 +1,156 @@
+### Environment variables
+@authHost = http://localhost:8080
+@userHost = http://localhost:8082
+@eventHost = http://localhost:8083
+@registrationHost = http://localhost:8084
+
+### 1. Authentication Flow
+
+### Sign up a new user
+# @name signup
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "testuser2",
+  "email": "test2@example.com",
+  "password": "Test123!",
+  "role": "ORGANIZER"
+}
+
+### Login with the new user
+# @name login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser2",
+  "password": "Test123!"
+}
+
+### Store the JWT token from the login response
+@authToken = {{login.response.body.token}}
+
+### 2. User Management Flow
+
+### Create a user profile
+# @name createUserProfile
+POST http://localhost:8082/api/v1/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+Content-Type: application/json
+
+{
+  "username": "testuser2",
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "test2@example.com",
+  "phone": "1234567890"
+}
+
+### Store the user ID from the create user profile response
+@userId = {{createUserProfile.response.body.id}}
+
+### Update user profile
+# @name updateUserProfile
+PUT http://localhost:8082/api/v1/users/testuser2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+Content-Type: application/json
+
+{
+  "firstName": "Updated",
+  "lastName": "User",
+  "email": "test2@example.com",
+  "phone": "9876543210"
+}
+
+### Get user profile
+# @name getUserProfile
+GET http://localhost:8082/api/v1/users/testuser2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+
+### 3. Event Management Flow
+
+### Create an event
+# @name createEvent
+POST http://localhost:8083/api/v1/events
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+Content-Type: application/json
+
+{
+  "title": "Test Event",
+  "description": "An event created for testing the full application flow",
+  "dateTime": "2025-07-15T18:00:00",
+  "location": "Test Location",
+  "category": "MUSIC",
+  "price": 49.99,
+  "organizerId": 1,
+  "status": "ACTIVE"
+}
+
+### Store the event ID from the create event response
+@eventId = {{createEvent.response.body.id}}
+
+### Update event details
+# @name updateEvent
+PUT http://localhost:8083/api/v1/events/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+Content-Type: application/json
+X-Organizer-Id: 1
+
+{
+  "title": "Updated Test Event",
+  "description": "An updated event for testing the full application flow",
+  "dateTime": "2025-07-15T19:00:00",
+  "location": "Updated Test Location",
+  "category": "MUSIC",
+  "price": 59.99,
+  "organizerId": 1,
+  "status": "ACTIVE"
+}
+
+### Get event details
+# @name getEvent
+GET http://localhost:8083/api/v1/events/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+
+### List events by category
+# @name listEventsByCategory
+GET http://localhost:8083/api/v1/events?category=MUSIC
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+
+### List upcoming events
+# @name listUpcomingEvents
+GET http://localhost:8083/api/v1/events/upcoming
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+
+### 4. Registration Flow
+
+### Register for an event
+# @name createRegistration
+POST http://localhost:8084/api/registrations
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+Content-Type: application/json
+
+{
+  "eventId": 1,
+  "userId": 1
+}
+
+### Store the registration ID from the create registration response
+@registrationId = {{createRegistration.response.body.id}}
+
+### Get registration details
+# @name getRegistration
+GET http://localhost:8084/api/registrations/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+
+### List user registrations
+# @name listUserRegistrations
+GET http://localhost:8084/api/registrations?userId=1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+
+### Cancel registration
+# @name cancelRegistration
+DELETE http://localhost:8084/api/registrations/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjIiLCJpYXQiOjE3NDQ4MTgyOTksImV4cCI6MTc0NDkwNDY5OX0.T70vWnFjJDRS85Savo1IRonHKnGkXPSn3OU7SZFsxKQ
+X-User-Id: 1 

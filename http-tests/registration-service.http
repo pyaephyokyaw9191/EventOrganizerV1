@@ -1,0 +1,75 @@
+### Environment variables
+@registrationHost = http://localhost:8084
+@authHost = http://localhost:8080
+@eventHost = http://localhost:8083
+
+### 1. Authentication Flow (Prerequisite)
+
+### Login and get JWT token
+# @name login
+POST {{authHost}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "Test123!"
+}
+
+### Store the JWT token from the login response
+@authToken = {{login.response.body.token}}
+
+### 2. Registration Service Health Check
+
+### Check registration service health
+GET {{registrationHost}}/api/registrations/health
+
+### 3. Event Creation (Prerequisite for Registration)
+GET http://localhost:8083/api/v1/events/health
+
+### Create a new event
+# @name createEvent
+POST {{eventHost}}/api/v1/events
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Test Event for Registration",
+  "description": "An event created for testing the registration service",
+  "dateTime": "2025-07-15T18:00:00",
+  "location": "Test Location",
+  "category": "MUSIC",
+  "price": 49.99,
+  "organizerId": 1
+}
+
+### Store the event ID from the create event response
+@eventId = {{createEvent.response.body.id}}
+
+### 4. Registration Flow
+
+### Register for an event
+# @name createRegistration
+POST {{registrationHost}}/api/registrations
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "eventId": 1,
+  "userId": 1
+}
+
+### Store the registration ID from the create registration response
+@registrationId = {{createRegistration.response.body.id}}
+
+### Get registration details
+GET http://localhost:8084/api/registrations/1
+Authorization: Bearer {{authToken}}
+
+### Get user's registrations
+GET http://localhost:8084/api/registrations?userId=1
+Authorization: Bearer {{authToken}}
+
+### Cancel registration
+DELETE http://localhost:8084/api/registrations/1
+Authorization: Bearer {{authToken}}
+X-User-Id: 1 
