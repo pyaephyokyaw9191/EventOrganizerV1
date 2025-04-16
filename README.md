@@ -8,21 +8,17 @@ A microservices-based event management system built with Spring Boot.
    - User authentication and authorization
    - JWT token management
 
-2. **User Service** (Port: 8081)
+2. **User Service** (Port: 8082)
    - User profile management
    - CRUD operations for user data
 
-3. **Event Service** (Port: 8082)
+3. **Event Service** (Port: 8083)
    - Event creation and management
    - Event search and filtering
 
-4. **Registration Service** (Port: 8083)
+4. **Registration Service** (Port: 8084)
    - Event registration management
    - Ticket handling
-
-5. **Payment Service** (Port: 8084)
-   - Payment processing
-   - Receipt generation
 
 ## Technology Stack
 
@@ -59,9 +55,6 @@ A microservices-based event management system built with Spring Boot.
    mvn spring-boot:run
    
    cd ../registration-service
-   mvn spring-boot:run
-   
-   cd ../payment-service
    mvn spring-boot:run
    ```
 
